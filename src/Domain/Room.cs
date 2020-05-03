@@ -1,5 +1,6 @@
 using MessagePack;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Mahjong.Domain
 {
@@ -69,9 +70,19 @@ namespace Mahjong.Domain
             return false;
         }
 
+        public void Start()
+        {
+            Interlocked.CompareExchange(ref this.Table, Table.Make(this.SheetPlayers), null);
+        }
+
         public bool IsStarted()
         {
             return null != this.Table;
+        }
+
+        public Table GetTable()
+        {
+            return this.Table;
         }
     }
 }

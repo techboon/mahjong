@@ -19,5 +19,8 @@ namespace Mahjong.Server
         Task SitDownAsync();
         Task StandUpAsync();
         Task RefreshRoomAsync();
+
+        Task StartGameAsync();
+        Task GetDeckAsync();
     }
 }

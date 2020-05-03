@@ -1,4 +1,5 @@
 using Mahjong.Domain;
+using System.Collections.Generic;
 
 namespace Mahjong.Client
 {
@@ -16,5 +17,7 @@ namespace Mahjong.Client
         public void OnRoomUpdate(Room room);
 
         public void OnReadyRoom();
+        public void OnStartGame();
+        public void OnYourDeck(Table table, List<Tile> deck);
     }
 }

@@ -87,5 +87,19 @@ namespace Mahjong.Server
         {
             await Task.Run(() => BroadcastToSelf(this.roomGroup).OnRoomUpdate(this.room));
         }
+
+        public async Task StartGameAsync()
+        {
+            if (!this.room.IsStarted())
+            {
+                this.room.Start();
+                await Task.Run(() => Broadcast(this.roomGroup).OnStartGame());
+            }
+        }
+
+        public async Task GetDeckAsync()
+        {
+            await Task.Run(() => BroadcastToSelf(this.roomGroup).OnYourDeck(this.room.GetTable(), this.player.Deck));
+        }
     }
 }

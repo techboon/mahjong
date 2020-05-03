@@ -75,6 +75,9 @@ namespace Mahjong.Client
                     case "RR":
                         this.hub.RefreshRoomAsync();
                         break;
+                    case "S":
+                        this.hub.StartGameAsync();
+                        break;
                     default:
                         break;
                 }
@@ -116,6 +119,23 @@ namespace Mahjong.Client
         public void OnReadyRoom()
         {
             Console.WriteLine("対局開始できる人数になりました");
+        }
+
+        public void OnStartGame()
+        {
+            Console.WriteLine("対局開始");
+            this.hub.GetDeckAsync();
+        }
+
+        public void OnYourDeck(Table table, List<Tile> deck)
+        {
+            Console.WriteLine("{0}さんの手番", table.NowPlaying.Name);
+            Console.WriteLine("手牌", table.NowPlaying);
+            foreach (Tile t in deck)
+            {
+                Console.Write("[{0}] ", t.ToString());
+            }
+            Console.WriteLine();
         }
     }
 }

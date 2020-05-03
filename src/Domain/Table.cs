@@ -1,3 +1,4 @@
+using MessagePack;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -6,16 +7,34 @@ using Mahjong.Exception;
 
 namespace Mahjong.Domain
 {
-    class Table
+    [MessagePackObject]
+    public class Table
     {
-        public Player SheetTon { get; private set; }
-        public Player SheetNan { get; private set; }
-        public Player SheetSha { get; private set; }
-        public Player SheetPey { get; private set; }
+        private Player SheetTon;
+        private Player SheetNan;
+        private Player SheetSha;
+        private Player SheetPey;
 
-        public List<Tile> Dora;
+        [Key(0)]
+        public string SheetTonName { get; set; }
+        [Key(1)]
+        public string SheetNanName { get; set; }
+        [Key(2)]
+        public string SheetShaName { get; set; }
+        [Key(3)]
+        public string SheetPeyName { get; set; }
+
+        [Key(4)]
+        public List<Tile> Dora { get; set; }
+        [Key(5)]
+        public Player NowPlaying { get; set; }
 
         private List<Tile> Tiles;
+
+        public Table()
+        {
+            
+        }
 
         private Table(List<Player> players)
         {
@@ -26,17 +45,25 @@ namespace Mahjong.Domain
 
             List<Player> shuffledPlayers = players.OrderBy(a => Guid.NewGuid()).ToList();
             this.SheetTon = shuffledPlayers[0];
+            this.SheetTonName = this.SheetTon.Name;
+
             this.SheetNan = shuffledPlayers[1];
+            this.SheetNanName = this.SheetNan.Name;
+
             this.SheetSha = shuffledPlayers[2];
+            this.SheetShaName = this.SheetSha.Name;
+
             if (4 == players.Count)
             {
                 this.SheetPey = shuffledPlayers[3];
+                this.SheetPeyName = this.SheetPey.Name;
             }
 
             this.Dora = new List<Tile>();
             this.Tiles = CreateAllTile.Invoke().OrderBy(a => Guid.NewGuid()).ToList();
 
             this.Haipai();
+            this.NowPlaying = this.SheetTon;
         }
 
         static public Table Make(List<Player> players)
