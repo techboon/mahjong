@@ -14,10 +14,10 @@ namespace mahjong
         {
             await Host.CreateDefaultBuilder().RunConsoleAppFrameworkAsync<Program>(args);
         }
-        public void Run(bool runServer = false, string hostname = "localhost", int port = 9999)
+        public void Run(bool server = false, string hostname = "localhost", int port = 9999)
         {
             GrpcEnvironment.SetLogger(new Grpc.Core.Logging.ConsoleLogger());
-            if (runServer)
+            if (server)
             {
                 this.runServer(hostname, port);
             } else {

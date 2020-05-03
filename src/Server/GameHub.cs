@@ -9,13 +9,16 @@ namespace Mahjong.Server
     /// </summary>
     public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
     {
-        int uid;
+        string uid;
         IGroup globalGroup;
+        IGroup roomGroup;
+        Room room;
 
-        public async Task JoinAsync(int uid)
+        public async Task JoinAsync(string uid)
         {
             this.uid = uid;
-            this.globalGroup = await Group.AddAsync(uid.ToString());
+            this.globalGroup = await Group.AddAsync("global");
+            await Task.Run(() => Broadcast(this.globalGroup).OnJoin(uid));
         }
         public async Task LeaveAsync()
         {
@@ -24,7 +27,31 @@ namespace Mahjong.Server
         }
         public async Task SendMessageAsync(string message)
         {
-            await Task.Run(() => Broadcast(this.globalGroup).OnReceiveMessage(uid.ToString(), message));
+            await Task.Run(() => Broadcast(this.globalGroup).OnReceiveMessage(uid, message));
+        }
+
+        public async Task CreateRoomAsync()
+        {
+            RoomProvider roomProvider = RoomProvider.Singleton();
+            if (null == this.roomGroup)
+            {
+                this.room = await Task.Run(() => roomProvider.CreateRoom());
+                this.roomGroup = await Group.AddAsync(this.room.id);
+            }
+            await Task.Run(() => BroadcastToSelf(this.globalGroup).OnEnterRoom(this.room));
+        }
+
+        public async Task EnterRoomAsync(string roomId)
+        {
+            RoomProvider roomProvider = RoomProvider.Singleton();
+            this.room = roomProvider.Get(roomId);
+            this.roomGroup = await Group.AddAsync(this.room.id);
+            await Task.Run(() => BroadcastToSelf(this.globalGroup).OnEnterRoom(this.room));
+        }
+
+        public async Task SendMessageInRoomAsync(string message)
+        {
+            await Task.Run(() => Broadcast(this.roomGroup).OnReceiveMessage(uid, message));
         }
     }
 }

@@ -1,3 +1,5 @@
+using Mahjong.Server;
+
 namespace Mahjong.Client
 {
     /// <summary>
@@ -23,5 +25,7 @@ namespace Mahjong.Client
         /// <param name="name">発言した人の名前</param>
         /// <param name="message">メッセージ</param>
         public void OnReceiveMessage(string name, string message);
+
+        public void OnEnterRoom(Room room);
     }
 }
