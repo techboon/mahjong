@@ -1,5 +1,6 @@
 namespace Mahjong.Exception
 {
+    [System.Serializable]
     public class InvalidArgumentException : System.Exception
     {
         public InvalidArgumentException() { }
