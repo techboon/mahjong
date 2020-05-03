@@ -1,4 +1,7 @@
-﻿using ConsoleAppFramework;
+﻿using Grpc.Core;
+using MagicOnion.Server;
+using Mahjong.Client;
+using ConsoleAppFramework;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading.Tasks;
@@ -13,22 +16,37 @@ namespace mahjong
         }
         public void Run(bool runServer = false, string hostname = "localhost", int port = 9999)
         {
+            GrpcEnvironment.SetLogger(new Grpc.Core.Logging.ConsoleLogger());
             if (runServer)
             {
                 this.runServer(hostname, port);
             } else {
-                this.runClient();
+                this.runClient(hostname, port);
             }
         }
 
         private void runServer(string hostname, int port)
         {
             Console.WriteLine("server host:{0} port:{1}", hostname, port);
+            var service = MagicOnionEngine.BuildServerServiceDefinition(isReturnExceptionStackTraceInErrorDetail: true);
+            var server = new global::Grpc.Core.Server
+            {
+                Services = { service },
+                Ports = { new ServerPort(hostname, port, ServerCredentials.Insecure) }
+            };
+            
+            // launch gRPC Server.
+            server.Start();
+
+            // and wait.
+            Console.ReadLine();
         }
 
-        private void runClient()
+        private void runClient(string hostname, int port)
         {
-            Console.WriteLine("client");
+            Console.WriteLine("client host:{0} port:{1}", hostname, port);
+            ConsoleClient cli = new ConsoleClient(hostname, port);
+            cli.Run();
         }
     }
 }
