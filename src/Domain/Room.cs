@@ -40,7 +40,7 @@ namespace Mahjong.Domain
             }
             lock(this.SheetPlayers)
             {
-                if (4 >= this.SheetPlayers.Count)
+                if (4 > this.SheetPlayers.Count)
                 {
                     this.SheetPlayers.Add(player);
                     return true;
@@ -67,6 +67,11 @@ namespace Mahjong.Domain
                 }
             }
             return false;
+        }
+
+        public bool IsStarted()
+        {
+            return null != this.Table;
         }
     }
 }

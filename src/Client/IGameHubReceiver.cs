@@ -14,5 +14,7 @@ namespace Mahjong.Client
 
         public void OnEnterRoom(Room room);
         public void OnRoomUpdate(Room room);
+
+        public void OnReadyRoom();
     }
 }

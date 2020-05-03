@@ -112,5 +112,10 @@ namespace Mahjong.Client
             this.room = room;
             GrpcEnvironment.Logger.Debug("room updated");
         }
+
+        public void OnReadyRoom()
+        {
+            Console.WriteLine("対局開始できる人数になりました");
+        }
     }
 }

@@ -67,6 +67,10 @@ namespace Mahjong.Server
             if (result)
             {
                 await Task.Run(() => Broadcast(this.roomGroup).OnReceiveMessage("SYS", this.player.Name + " さんが着席"));
+                if (!this.room.IsStarted() && 3 <= this.room.SheetPlayers.Count)
+                {
+                    await Task.Run(() => Broadcast(this.roomGroup).OnReadyRoom());
+                }
             } else {
                 await Task.Run(() => BroadcastToSelf(this.roomGroup).OnReceiveMessage("SYS", "着席できませんでした"));
             }
