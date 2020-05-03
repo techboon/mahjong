@@ -29,8 +29,10 @@ C ... Connect         // Grpcチャネル接続
 J ... Join            // MagicOnionのJoinAsync
 E ... Create Room     // ルームを作成して入室
 F ... Enter Room      // ルームに参加
-M ... Message(global) // 全体に向けてメッセージ送信 
-RM .. Message(room)   // ルーム内に向けてメッセージ送信
+M ... Message(Global) // 全体に向けてメッセージ送信 
+RM .. Message(Room)   // ルーム内に向けてメッセージ送信
+RS .. Room Sit/Stand  // ルーム内で着席/離席する
+RR .. Refresh Room    // ルーム情報更新
 ```
 
 コンソール上で雑にこういったコマンドを投げて動作確認できる。
