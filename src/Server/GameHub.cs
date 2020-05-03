@@ -85,7 +85,7 @@ namespace Mahjong.Server
 
         public async Task RefreshRoomAsync()
         {
-            await Task.Run(() => Broadcast(this.roomGroup).OnRoomUpdate(this.room));
+            await Task.Run(() => BroadcastToSelf(this.roomGroup).OnRoomUpdate(this.room));
         }
     }
 }
