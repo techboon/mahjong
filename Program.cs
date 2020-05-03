@@ -1,20 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using Mahjong.Domain;
+﻿using ConsoleAppFramework;
+using Microsoft.Extensions.Hosting;
+using System;
+using System.Threading.Tasks;
 
 namespace mahjong
 {
-    class Program
+    class Program : ConsoleAppBase
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Player a = new Player("A");
-            Player b = new Player("B");
-            Player c = new Player("C");
-            Player d = new Player("D");
-            Table t = Table.Make(new List<Player>() {a, b, c, d});
+            await Host.CreateDefaultBuilder().RunConsoleAppFrameworkAsync<Program>(args);
+        }
+        public void Run(bool runServer = false, string hostname = "localhost", int port = 9999)
+        {
+            if (runServer)
+            {
+                this.runServer(hostname, port);
+            } else {
+                this.runClient();
+            }
+        }
 
-            Console.WriteLine("配牌完了");
+        private void runServer(string hostname, int port)
+        {
+            Console.WriteLine("server host:{0} port:{1}", hostname, port);
+        }
+
+        private void runClient()
+        {
+            Console.WriteLine("client");
         }
     }
 }
