@@ -17,6 +17,7 @@ namespace mahjong
         public void Run(bool server = false, string hostname = "localhost", int port = 9999)
         {
             GrpcEnvironment.SetLogger(new Grpc.Core.Logging.ConsoleLogger());
+
             if (server)
             {
                 this.runServer(hostname, port);

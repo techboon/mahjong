@@ -7,5 +7,6 @@
     <PackageReference Include="ConsoleAppFramework" Version="2.3.0"/>
     <PackageReference Include="MagicOnion" Version="3.0.11"/>
     <PackageReference Include="MessagePack" Version="2.1.115"/>
+    <PackageReference Include="MessagePack.ImmutableCollection" Version="2.1.115"/>
   </ItemGroup>
 </Project>

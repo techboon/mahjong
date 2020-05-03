@@ -1,4 +1,6 @@
 using Mahjong.Client;
+using Mahjong.Domain;
+using Mahjong.Helper;
 using MagicOnion.Server.Hubs;
 using System.Threading.Tasks;
 
@@ -9,25 +11,26 @@ namespace Mahjong.Server
     /// </summary>
     public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
     {
-        string uid;
+        Player player;
         IGroup globalGroup;
         IGroup roomGroup;
         Room room;
 
         public async Task JoinAsync(string uid)
         {
-            this.uid = uid;
+            this.player = new Player(uid);
             this.globalGroup = await Group.AddAsync("global");
-            await Task.Run(() => Broadcast(this.globalGroup).OnJoin(uid));
+            await Task.Run(() => BroadcastToSelf(this.globalGroup).OnJoinComplete(this.player));
+            await Task.Run(() => BroadcastExceptSelf(this.globalGroup).OnJoin(uid));
         }
         public async Task LeaveAsync()
         {
             await this.globalGroup.RemoveAsync(this.Context);
-            await Task.Run(() => Broadcast(this.globalGroup).OnLeave(uid.ToString()));
+            await Task.Run(() => Broadcast(this.globalGroup).OnLeave(this.player.Name.ToString()));
         }
         public async Task SendMessageAsync(string message)
         {
-            await Task.Run(() => Broadcast(this.globalGroup).OnReceiveMessage(uid, message));
+            await Task.Run(() => Broadcast(this.globalGroup).OnReceiveMessage(this.player.Name, message));
         }
 
         public async Task CreateRoomAsync()
@@ -36,6 +39,7 @@ namespace Mahjong.Server
             if (null == this.roomGroup)
             {
                 this.room = await Task.Run(() => roomProvider.CreateRoom());
+                this.room.Join(this.player);
                 this.roomGroup = await Group.AddAsync(this.room.id);
             }
             await Task.Run(() => BroadcastToSelf(this.globalGroup).OnEnterRoom(this.room));
@@ -45,13 +49,39 @@ namespace Mahjong.Server
         {
             RoomProvider roomProvider = RoomProvider.Singleton();
             this.room = roomProvider.Get(roomId);
+            this.room.Join(this.player);
             this.roomGroup = await Group.AddAsync(this.room.id);
             await Task.Run(() => BroadcastToSelf(this.globalGroup).OnEnterRoom(this.room));
+            await Task.Run(() => BroadcastExceptSelf(this.roomGroup).OnRoomUpdate(this.room));
         }
 
         public async Task SendMessageInRoomAsync(string message)
+        { 
+            await Task.Run(() => Broadcast(this.roomGroup).OnReceiveMessage(this.player.Name, message));
+        }
+
+        public async Task SitDownAsync()
         {
-            await Task.Run(() => Broadcast(this.roomGroup).OnReceiveMessage(uid, message));
+            bool result = this.room.SitDown(player);
+            await Task.Run(() => Broadcast(this.roomGroup).OnRoomUpdate(this.room));
+            if (result)
+            {
+                await Task.Run(() => Broadcast(this.roomGroup).OnReceiveMessage("SYS", this.player.Name + " さんが着席"));
+            } else {
+                await Task.Run(() => BroadcastToSelf(this.roomGroup).OnReceiveMessage("SYS", "着席できませんでした"));
+            }
+        }
+
+        public async Task StandUpAsync()
+        {
+            this.room.StandUp(player);
+            await Task.Run(() => Broadcast(this.roomGroup).OnRoomUpdate(this.room));
+            await Task.Run(() => Broadcast(this.roomGroup).OnReceiveMessage("SYS", this.player.Name + " さんが離席"));
+        }
+
+        public async Task RefreshRoomAsync()
+        {
+            await Task.Run(() => Broadcast(this.roomGroup).OnRoomUpdate(this.room));
         }
     }
 }

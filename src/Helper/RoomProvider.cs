@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Concurrent;
+using Mahjong.Domain;
 using Mahjong.Exception;
 
-namespace Mahjong.Server
+namespace Mahjong.Helper
 {
     class RoomProvider
     {

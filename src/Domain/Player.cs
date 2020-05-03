@@ -1,12 +1,16 @@
+using MessagePack;
 using System;
 using System.Collections.Generic;
 
 namespace Mahjong.Domain
 {
-    class Player
+    [MessagePackObject]
+    public class Player
     {
+        [Key(0)]
         public string Name { get; private set; }
-        private List<Tile> Deck;
+        [Key(1)]
+        public List<Tile> Deck { get; private set; }
 
         public Player(string name)
         {

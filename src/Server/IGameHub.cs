@@ -15,5 +15,9 @@ namespace Mahjong.Server
         Task CreateRoomAsync();
         Task EnterRoomAsync(string roomId);
         Task SendMessageInRoomAsync(string message);
+
+        Task SitDownAsync();
+        Task StandUpAsync();
+        Task RefreshRoomAsync();
     }
 }

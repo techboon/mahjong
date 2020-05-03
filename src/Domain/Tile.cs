@@ -1,8 +1,10 @@
+using MessagePack;
 using System;
 
 namespace Mahjong.Domain
 {
-    class Tile {
+    [MessagePackObject]
+    public class Tile {
         public enum Type
         {
             Man,
@@ -11,8 +13,9 @@ namespace Mahjong.Domain
             Fon,
             Sangen
         }
-
+        [Key(0)]
         public Type type { get; private set; }
+        [Key(1)]
         public int value { get; private set; }
 
         public Tile(Type type, int value)

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Grpc.Core;
 using MagicOnion.Client;
 using Mahjong.Client;
+using Mahjong.Domain;
 using Mahjong.Server;
 
 namespace Mahjong.Client
@@ -10,6 +12,8 @@ namespace Mahjong.Client
     {
         Channel channel;
         IGameHub hub;
+        Player player;
+        Room room;
 
         public ConsoleClient(string hostname, int port)
         {
@@ -55,6 +59,22 @@ namespace Mahjong.Client
                         string roomMessage = Console.ReadLine();
                         this.hub.SendMessageInRoomAsync(roomMessage);
                         break;
+                    case "RS":
+                        if (null == this.room)
+                        {
+                            Console.WriteLine("ルームに入室していない");
+                            continue;
+                        }
+                        if (this.room.IsSitting(this.player))
+                        {
+                            this.hub.StandUpAsync();
+                        } else {
+                            this.hub.SitDownAsync();
+                        }
+                        break;
+                    case "RR":
+                        this.hub.RefreshRoomAsync();
+                        break;
                     default:
                         break;
                 }
@@ -64,6 +84,11 @@ namespace Mahjong.Client
         public void OnJoin(string name)
         {
             GrpcEnvironment.Logger.Debug("Joined user: {0}", name);
+        }
+
+        public void OnJoinComplete(Player player)
+        {
+            this.player = player;
         }
 
         public void OnLeave(string name)
@@ -78,7 +103,14 @@ namespace Mahjong.Client
 
         public void OnEnterRoom(Room room)
         {
+            this.room = room;
             GrpcEnvironment.Logger.Debug("Entered room id: {0}", room.id);
+        }
+
+        public void OnRoomUpdate(Room room)
+        {
+            this.room = room;
+            GrpcEnvironment.Logger.Debug("room updated");
         }
     }
 }
