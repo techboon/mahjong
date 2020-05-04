@@ -10,7 +10,7 @@ namespace Mahjong.Server
     /// </summary>
     public interface IGameHub : IStreamingHub<IGameHub, IGameHubReceiver>
     {
-        Task JoinAsync(string uid);
+        Task JoinAsync(string uid, string name);
         Task LeaveAsync();
         Task SendMessageAsync(string message);
         Task CreateRoomAsync();

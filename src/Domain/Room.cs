@@ -62,7 +62,7 @@ namespace Mahjong.Domain
         {
             foreach (Player p in this.SheetPlayers)
             {
-                if (p.Name == player.Name)
+                if (p.Uid == player.Uid)
                 {
                     return true;
                 }

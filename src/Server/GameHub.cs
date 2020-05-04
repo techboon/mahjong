@@ -16,9 +16,9 @@ namespace Mahjong.Server
         IGroup roomGroup;
         Room room;
 
-        public async Task JoinAsync(string uid)
+        public async Task JoinAsync(string uid, string name)
         {
-            this.player = new Player(uid);
+            this.player = new Player(uid, name);
             this.globalGroup = await Group.AddAsync("global");
             await Task.Run(() => BroadcastToSelf(this.globalGroup).OnJoinComplete(this.player));
             await Task.Run(() => BroadcastExceptSelf(this.globalGroup).OnJoin(uid));

@@ -53,8 +53,9 @@ namespace Mahjong.Client
                     break;
                 case "J":
                     Console.WriteLine("Enter User ID:");
-                    string uid = Console.ReadLine();
-                    this.hub.JoinAsync(uid);
+                    string uid = Guid.NewGuid().ToString();
+                    string name = Console.ReadLine();
+                    this.hub.JoinAsync(uid, name);
                     break;
                 case "E":
                     this.hub.CreateRoomAsync();
@@ -104,7 +105,7 @@ namespace Mahjong.Client
             {
                 return false;
             }
-            if (this.player.Name == this.table.NowPlaying.Name)
+            if (this.player.Uid == this.table.NowPlaying.Uid)
             {
                 Tile t = Tile.FromString(key);
                 if (null != t)
