@@ -72,7 +72,7 @@ namespace Mahjong.Domain
 
         public void Start()
         {
-            Interlocked.CompareExchange(ref this.Table, Table.Make(this.SheetPlayers), null);
+            Interlocked.CompareExchange(ref this.Table, new Table(this.SheetPlayers), null);
         }
 
         public bool IsStarted()

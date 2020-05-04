@@ -35,8 +35,8 @@ namespace Mahjong.Domain
         {
             
         }
-
-        private Table(List<Player> players)
+        
+        public Table(List<Player> players)
         {
             if (3 > players.Count || 4 < players.Count)
             {
@@ -64,11 +64,6 @@ namespace Mahjong.Domain
 
             this.Haipai();
             this.NowPlaying = this.SheetTon;
-        }
-
-        static public Table Make(List<Player> players)
-        {
-            return new Table(players);
         }
 
         private void Haipai()
