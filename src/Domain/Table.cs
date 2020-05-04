@@ -110,6 +110,10 @@ namespace Mahjong.Domain
             }
             // 東家が最後にちょんちょん取る2枚目の分
             this.SheetTon.addDeck(this.Tiles[pos++]);
+            foreach (Player target in p)
+            {
+                target.Deck.Sort();
+            }
 
             this.Tiles = this.Tiles.GetRange(pos, (this.Tiles.Count - pos));
         }

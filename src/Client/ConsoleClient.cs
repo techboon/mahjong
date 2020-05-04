@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Grpc.Core;
 using MagicOnion.Client;
-using Mahjong.Client;
 using Mahjong.Domain;
 using Mahjong.Server;
 
@@ -15,10 +14,13 @@ namespace Mahjong.Client
         Player player;
         Room room;
 
+        bool isGaming;
+
         public ConsoleClient(string hostname, int port)
         {
             // standard gRPC channel
             this.channel = new Channel(hostname, port, ChannelCredentials.Insecure);
+            this.isGaming = false;
         }
 
         public void Run()
@@ -28,61 +30,81 @@ namespace Mahjong.Client
             while(isContinue)
             {
                 string key = Console.ReadLine();
-                switch(key)
+                if (!this.isGaming)
                 {
-                    case "Q":
-                        isContinue = false;
-                        break;
-                    case "C":
-                        this.hub = StreamingHubClient.Connect<IGameHub, IGameHubReceiver>(this.channel, this);
-                        break;
-                    case "J":
-                        Console.WriteLine("Enter User ID:");
-                        string uid = Console.ReadLine();
-                        this.hub.JoinAsync(uid);
-                        break;
-                    case "E":
-                        this.hub.CreateRoomAsync();
-                        break;
-                    case "F":
-                        Console.WriteLine("Enter Room ID:");
-                        string roomId = Console.ReadLine();
-                        this.hub.EnterRoomAsync(roomId);
-                        break;
-                    case "M":
-                        Console.WriteLine("Enter Message (global):");
-                        string message = Console.ReadLine();
-                        this.hub.SendMessageAsync(message);
-                        break;
-                    case "RM":
-                        Console.WriteLine("Enter Message (room):");
-                        string roomMessage = Console.ReadLine();
-                        this.hub.SendMessageInRoomAsync(roomMessage);
-                        break;
-                    case "RS":
-                        if (null == this.room)
-                        {
-                            Console.WriteLine("ルームに入室していない");
-                            continue;
-                        }
-                        if (this.room.IsSitting(this.player))
-                        {
-                            this.hub.StandUpAsync();
-                        } else {
-                            this.hub.SitDownAsync();
-                        }
-                        break;
-                    case "RR":
-                        this.hub.RefreshRoomAsync();
-                        break;
-                    case "S":
-                        this.hub.StartGameAsync();
-                        break;
-                    default:
-                        break;
+                    isContinue = this.Command(key);
+                } else {
+                    isContinue = this.CommandInGame(key);
                 }
+
                 Console.WriteLine(channel.State.ToString());
             }
+        }
+
+        public bool Command(string key)
+        {
+            switch(key)
+            {
+                case "Q":
+                    return false;
+                case "C":
+                    this.hub = StreamingHubClient.Connect<IGameHub, IGameHubReceiver>(this.channel, this);
+                    break;
+                case "J":
+                    Console.WriteLine("Enter User ID:");
+                    string uid = Console.ReadLine();
+                    this.hub.JoinAsync(uid);
+                    break;
+                case "E":
+                    this.hub.CreateRoomAsync();
+                    break;
+                case "F":
+                    Console.WriteLine("Enter Room ID:");
+                    string roomId = Console.ReadLine();
+                    this.hub.EnterRoomAsync(roomId);
+                    break;
+                case "M":
+                    Console.WriteLine("Enter Message (global):");
+                    string message = Console.ReadLine();
+                    this.hub.SendMessageAsync(message);
+                    break;
+                case "RM":
+                    Console.WriteLine("Enter Message (room):");
+                    string roomMessage = Console.ReadLine();
+                    this.hub.SendMessageInRoomAsync(roomMessage);
+                    break;
+                case "RS":
+                    if (null == this.room)
+                    {
+                        Console.WriteLine("ルームに入室していない");
+                    }
+                    if (this.room.IsSitting(this.player))
+                    {
+                        this.hub.StandUpAsync();
+                    } else {
+                        this.hub.SitDownAsync();
+                    }
+                    break;
+                case "RR":
+                    this.hub.RefreshRoomAsync();
+                    break;
+                case "S":
+                    this.hub.StartGameAsync();
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+
+        public bool CommandInGame(string key)
+        {
+            switch (key)
+            {
+                default:
+                    break;
+            }
+            return true;
         }
         public void OnJoin(string name)
         {
@@ -124,14 +146,15 @@ namespace Mahjong.Client
         public void OnStartGame()
         {
             Console.WriteLine("対局開始");
+            this.isGaming = true;
             this.hub.GetDeckAsync();
         }
 
-        public void OnYourDeck(Table table, List<Tile> deck)
+        public void OnYourDeck(Table table, Deck deck)
         {
             Console.WriteLine("{0}さんの手番", table.NowPlaying.Name);
             Console.WriteLine("手牌", table.NowPlaying);
-            foreach (Tile t in deck)
+            foreach (Tile t in deck.tiles)
             {
                 Console.Write("[{0}] ", t.ToString());
             }

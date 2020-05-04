@@ -10,12 +10,12 @@ namespace Mahjong.Domain
         [Key(0)]
         public string Name { get; private set; }
         [Key(1)]
-        public List<Tile> Deck { get; private set; }
+        public Deck Deck { get; private set; }
 
         public Player(string name)
         {
             this.Name = name;
-            this.Deck = new List<Tile>();
+            this.Deck = new Deck();
         }
 
         public void addDeck(Tile tile)

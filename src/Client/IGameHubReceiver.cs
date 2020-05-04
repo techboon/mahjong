@@ -18,6 +18,6 @@ namespace Mahjong.Client
 
         public void OnReadyRoom();
         public void OnStartGame();
-        public void OnYourDeck(Table table, List<Tile> deck);
+        public void OnYourDeck(Table table, Deck deck);
     }
 }
