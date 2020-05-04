@@ -1,5 +1,6 @@
 using MagicOnion;
 using Mahjong.Client;
+using Mahjong.Domain;
 using System.Threading.Tasks;
 
 namespace Mahjong.Server
@@ -22,5 +23,7 @@ namespace Mahjong.Server
 
         Task StartGameAsync();
         Task GetDeckAsync();
+
+        Task InGameDahai(Tile tile);
     }
 }

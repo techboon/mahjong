@@ -83,13 +83,8 @@ namespace Mahjong.Domain
             // 最後から6枚目がドラ
             this.Dora.Add(this.Tiles[this.Tiles.Count - 1 - 6]);
 
-            Player[] p;
-            if (null == this.SheetPey)
-            {
-                p = new Player[] { this.SheetTon, this.SheetNan, this.SheetSha };
-            } else {
-                p = new Player[] { this.SheetTon, this.SheetNan, this.SheetSha, this.SheetPey };
-            }
+            Player[] p = this.GetPlayers();
+
             int pos = 0;
 
             // 東家から順に4枚ずつ3回取る
@@ -116,6 +111,56 @@ namespace Mahjong.Domain
             }
 
             this.Tiles = this.Tiles.GetRange(pos, (this.Tiles.Count - pos));
+        }
+
+        public bool Dahai(Player player, Tile tile)
+        {
+            if (this.NowPlaying != player)
+            {
+                return false;
+            }
+            if (this.NowPlaying.Deck.Has(tile))
+            {
+                this.NowPlaying.Deck.Remove(tile);
+                this.Next();
+                return true;
+            }
+            return false;
+        }
+
+        private Player[] GetPlayers()
+        {
+            Player[] p;
+            if (null == this.SheetPey)
+            {
+                p = new Player[] { this.SheetTon, this.SheetNan, this.SheetSha };
+            } else {
+                p = new Player[] { this.SheetTon, this.SheetNan, this.SheetSha, this.SheetPey };
+            }
+            return p;
+        }
+
+        private void Next()
+        {
+            // 鳴きの割り込みチェック
+            // 次の人が牌を取る
+            this.NowPlayingNext();
+            this.NowPlaying.Deck.Add(this.Tiles.First());
+            this.Tiles.RemoveAt(0);
+        }
+
+        private void NowPlayingNext()
+        {
+            Player[] p = this.GetPlayers();
+            int pos = 0;
+            for (int i = 0; i < p.Length; i++)
+            {
+                if (this.NowPlaying == p[i])
+                {
+                    pos = i;
+                }
+            }
+            this.NowPlaying = p[(pos + 1) % p.Length];
         }
     }
 }

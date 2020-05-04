@@ -13,6 +13,7 @@ namespace Mahjong.Client
         IGameHub hub;
         Player player;
         Room room;
+        Table table;
 
         bool isGaming;
 
@@ -99,10 +100,17 @@ namespace Mahjong.Client
 
         public bool CommandInGame(string key)
         {
-            switch (key)
+            if ("Q" == key)
             {
-                default:
-                    break;
+                return false;
+            }
+            if (this.player.Name == this.table.NowPlaying.Name)
+            {
+                Tile t = Tile.FromString(key);
+                if (null != t)
+                {
+                    this.hub.InGameDahai(t);
+                }
             }
             return true;
         }
@@ -150,8 +158,14 @@ namespace Mahjong.Client
             this.hub.GetDeckAsync();
         }
 
+        public void OnNext()
+        {
+            this.hub.GetDeckAsync();
+        }
+
         public void OnYourDeck(Table table, Deck deck)
         {
+            this.table = table;
             Console.WriteLine("{0}さんの手番", table.NowPlaying.Name);
             Console.WriteLine("手牌", table.NowPlaying);
             foreach (Tile t in deck.tiles)

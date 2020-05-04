@@ -25,10 +25,34 @@ namespace Mahjong.Domain
             this.tiles.Remove(target);
         }
 
+        public void Remove(Tile tile)
+        {
+            foreach (Tile t in this.tiles)
+            {
+                if (t.Equal(tile))
+                {
+                    this.tiles.Remove(t);
+                    break;
+                }
+            }
+        }
+
         public void Sort()
         {
             this.tiles.Sort((x, y) => x.value - y.value);
             this.tiles.Sort((x, y) => x.type - y.type);
+        }
+
+        public bool Has(Tile tile)
+        {
+            foreach (Tile t in this.tiles)
+            {
+                if (t.Equal(tile))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

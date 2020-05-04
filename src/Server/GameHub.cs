@@ -101,5 +101,13 @@ namespace Mahjong.Server
         {
             await Task.Run(() => BroadcastToSelf(this.roomGroup).OnYourDeck(this.room.GetTable(), this.player.Deck));
         }
+
+        public async Task InGameDahai(Tile tile)
+        {
+            if (this.room.GetTable().Dahai(this.player, tile))
+            {
+                await Task.Run(() => Broadcast(this.roomGroup).OnNext());
+            }
+        }
     }
 }
