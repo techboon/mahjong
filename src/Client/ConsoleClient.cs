@@ -105,6 +105,18 @@ namespace Mahjong.Client
             {
                 return false;
             }
+            if ("D" == key)
+            {
+                foreach (Player player in this.table.Sutehai.Keys)
+                {
+                    string sutehai = "";
+                    foreach (Tile t in this.table.Sutehai[player])
+                    {
+                        sutehai += string.Format("[{0}] ", t.ToString());
+                    }
+                    Console.WriteLine("{0} さん:\r\n{1}\r\n", player.Name, sutehai);
+                }
+            }
             if (this.player.Uid == this.table.NowPlaying.Uid)
             {
                 Tile t = Tile.FromString(key);

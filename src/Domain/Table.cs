@@ -28,6 +28,8 @@ namespace Mahjong.Domain
         public List<Tile> Dora { get; set; }
         [Key(5)]
         public Player NowPlaying { get; set; }
+        [Key(6)]
+        public Dictionary<Player, List<Tile>> Sutehai { get; set; }
 
         private List<Tile> Tiles;
 
@@ -64,6 +66,12 @@ namespace Mahjong.Domain
 
             this.Haipai();
             this.NowPlaying = this.SheetTon;
+
+            this.Sutehai = new Dictionary<Player, List<Tile>>();
+            foreach (Player player in players)
+            {
+                this.Sutehai.Add(player, new List<Tile>());
+            }
         }
 
         private void Haipai()
@@ -117,6 +125,7 @@ namespace Mahjong.Domain
             if (this.NowPlaying.Deck.Has(tile))
             {
                 this.NowPlaying.Deck.Remove(tile);
+                this.Sutehai[player].Add(tile);
                 this.Next();
                 return true;
             }
